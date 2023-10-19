@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 typedef struct {
   int id;
   char name[50];
@@ -11,10 +10,11 @@ typedef struct {
 
 
 void choice() {
-  printf("------------------------------\n");
+  printf("\n------------------------------\n");
   printf("|       1- REGISTER ITEM     |\n");
   printf("|       2- BUY ITEMS         |\n");
-  printf("|       3- CART              |\n");
+  printf("|       3- CART              |\n");  
+  printf("|       4- PAY               |\n");
   printf("|       0- GO OUT            |\n");
   printf("------------------------------\n");
 }
@@ -28,44 +28,42 @@ int registerItem() {
   char yes_no;
   int qty_items;
 
-  printf("Insert the product ID: ");
+  printf("\nInsert the product ID: ");
   scanf("%i", &products->id);
-  
-  printf("Insert the product name: ");  
+
+  printf("\nInsert the product name: ");
   scanf("%s", products->name);
 
-  printf("Insert the product price: ");
+  printf("\nInsert the product price: ");
   scanf("%f", &products->price);
 
-  printf("Product registered. Do you want register more items? (y/n)");
+  printf("\nProduct registered. Do you want register more items? (y/n)\n");
   scanf(" %c", &yes_no);
-  fprintf(data, "ID: %i | Product Name: %s | Price: %.2f\n", products->id, products->name, products->price);
+  fprintf(data, "ID: %i | Product Name: %s | Price: %.2f\n", products->id,
+          products->name, products->price);
 
-  while (1)
-  {
-    if (yes_no == 'y') 
-    {
-      printf("How many items do you want to register?");
+  while (1) {
+    if (yes_no == 'y') {
+      printf("\nHow many items do you want to register? ");
       scanf("%i", &qty_items);
-  
+
       products = realloc(products, qty_items * sizeof(Product));
-  
-      for (int i = 0; i < qty_items; i++) 
-      {
-        printf("Insert the product ID: ");
+
+      for (int i = 0; i < qty_items; i++) {
+        printf("\nInsert the product ID: ");
         scanf("%i", &products[i].id);
-        
-        printf("Insert the product name: ");
+
+        printf("\nInsert the product name: ");
         scanf("%s", products[i].name);
-  
-        printf("Insert the product price: ");
+
+        printf("\nInsert the product price: ");
         scanf("%f", &products[i].price);
-  
-        printf("Product registered.");
-        fprintf(data, "ID: %i | Product Name: %s | Price: %.2f\n", products->id, products->name, products->price);
+
+        printf("\nProduct registered.");
+        fprintf(data, "ID: %i | Product Name: %s | Price: %.2f\n", products->id,
+                products->name, products->price);
       }
-    }
-    else
+    } else
       break;
     fclose(data);
   }
@@ -73,53 +71,125 @@ int registerItem() {
 }
 
 
-void printItems() 
-{
+void printItems() {
   FILE *data;
   data = fopen("items.txt", "r");
 
-  FILE * cart;
+  FILE *cart;
   cart = fopen("cart.txt", "w");
 
   char c;
   int id_buy;
   int found = 0;
   Product product;
-  
+  char yes_no;
+
   while ((c = fgetc(data)) != EOF) {
     printf("%c", c);
   }
 
-  printf("Enter the ID of the item you want: ");
+  printf("\n\nEnter the ID of the item you want: ");
   scanf("%i", &id_buy);
 
-  while(fscanf(data, "%i %s %f", &product.id, product.name, &product.price) != EOF)
-  {
-    if(id_buy == product.id)
-    {
-        printf("Item added to your cart.");
-        fprintf(cart, "ID: %i | Product Name: %s | Price: %f", product.id, product.name, product.price);
-        found = 1;
+  rewind(data);
+
+  while (fscanf(data, "ID: %i | Product Name: %s | Price: %f\n", &product.id,
+                product.name, &product.price) != EOF) {
+
+    if (id_buy == product.id) {
+      printf("Item added to your cart. ");
+      fprintf(cart, "ID: %i | Product Name: %s | Price: %.2f\n", product.id,
+              product.name, product.price);
+      found = 1;
+
+      printf("Do you want to buy any more items? (y/n)\n");
+      scanf(" %c", &yes_no);
+
+      if (yes_no == 'y') {
+        rewind(data);
+        printf("Enter the ID of the item you want: ");
+        scanf("%i", &id_buy);
+      } else
+        break;
     }
   }
 
   if (found == 0)
     printf("Item not found.\n");
-  
+
   fclose(data);
   fclose(cart);
 }
 
 
-int main() 
+void printCart()
 {
+  FILE *cart;
+  cart = fopen("cart.txt", "r");
+
+  char c;
+  float total_cart = 0;
+  Product products_cart;
+
+  printf("This is your cart:\n\n");
+  
+  while ((c = fgetc(cart)) != EOF) {
+    printf("%c", c);
+  }
+
+  rewind(cart);
+  
+  while (fscanf(cart, "ID: %i | Product Name: %s | Price: %f\n", &products_cart.id, products_cart.name, &products_cart.price) != EOF) 
+  {
+      total_cart += products_cart.price;
+  }
+  printf("\nTotal: %.2f", total_cart);
+  fclose(cart);
+}
+
+
+void pay() 
+{
+  FILE *cart;
+  cart = fopen("cart.txt", "r");
+  float user_pay;
+  float change;
+  float total_cart;
+  Product products_cart;
+  
+  while (fscanf(cart, "ID: %i | Product Name: %s | Price: %f\n", &products_cart.id, products_cart.name, &products_cart.price) != EOF) 
+  {
+      total_cart += products_cart.price;
+  }
+  printf("\nTotal: %.2f", total_cart);
+
+  printf("\nInsert the amount you use to pay: $");
+  scanf("%f", &user_pay);
+
+  if (user_pay > total_cart)
+  {
+    change = user_pay - total_cart;
+    printf("Thank you for your purchase. Your change is $%.2f", change);
+  } 
+  else if (user_pay < total_cart)
+  {
+    printf("You don't have enough money. Try again");
+  } else
+  {
+    printf("Thank you for your purchase.");
+  }
+  fclose(cart);
+}
+
+
+int main() {
   int user_choice;
 
   for (;;) {
-    
+
     choice();
     scanf("%i", &user_choice);
-    
+
     switch (user_choice) {
     case 1:
       registerItem();
@@ -128,7 +198,10 @@ int main()
       printItems();
       break;
     case 3:
+      printCart();
       break;
+    case 4:
+      pay();  
     case 0:
       return 0;
       break;
