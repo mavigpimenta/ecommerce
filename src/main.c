@@ -198,7 +198,7 @@ int main()
 {  
   int user_choice;
   int password;
-  char user[3];
+  char user[5];
   
   for (;;) {
 
