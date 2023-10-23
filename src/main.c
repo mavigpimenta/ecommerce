@@ -8,6 +8,7 @@ typedef struct {
   float price;
 } Product;
 
+
 void choice() {
   printf("\n------------------------------\n");
   printf("|       1- REGISTER ITEM     |\n");
@@ -17,6 +18,7 @@ void choice() {
   printf("|       0- GO OUT            |\n");
   printf("------------------------------\n");
 }
+
 
 int registerItem() {
   FILE *data;
@@ -69,6 +71,7 @@ int registerItem() {
   free(products);
 }
 
+
 void printItems() {
   FILE *data;
   data = fopen("items.txt", "r");
@@ -119,6 +122,7 @@ void printItems() {
   fclose(cart);
 }
 
+
 void printCart()
 {
   FILE *cart;
@@ -144,10 +148,13 @@ void printCart()
   fclose(cart);
 }
 
+
+
 void pay() 
 {
   FILE *cart;
   cart = fopen("cart.txt", "r");
+  
   float user_pay;
   float change;
   float total_cart;
@@ -194,7 +201,7 @@ int main()
   char user[3];
   
   for (;;) {
-  
+
     choice();
     scanf("%i", &user_choice);
 
