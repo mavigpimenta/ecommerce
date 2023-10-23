@@ -12,7 +12,8 @@ void choice() {
   printf("\n------------------------------\n");
   printf("|       1- REGISTER ITEM     |\n");
   printf("|       2- BUY ITEMS         |\n");
-  printf("|       3- CART              |\n");
+  printf("|       3- CART              |\n");  
+  printf("|       4- PAY               |\n");
   printf("|       0- GO OUT            |\n");
   printf("------------------------------\n");
 }
@@ -57,14 +58,15 @@ int registerItem() {
         scanf("%f", &products[i].price);
 
         printf("\nProduct registered.");
-        fprintf(data, "ID: %i | Product Name: %s | Price: %.2f\n", products->id,
-                products->name, products->price);
+        fprintf(data, "ID: %i | Product Name: %s | Price: %.2f\n", products[i].id,
+                products[i].name, products[i].price);
       }
     } else
       break;
     fclose(data);
   }
   return 0;
+  free(products);
 }
 
 void printItems() {
@@ -81,7 +83,7 @@ void printItems() {
   char yes_no;
 
   while ((c = fgetc(data)) != EOF) {
-    printf(" %c", c);
+    printf("%c", c);
   }
 
   printf("\n\nEnter the ID of the item you want: ");
@@ -142,25 +144,87 @@ void printCart()
   fclose(cart);
 }
 
+void pay() 
+{
+  FILE *cart;
+  cart = fopen("cart.txt", "r");
+  float user_pay;
+  float change;
+  float total_cart;
+  Product products_cart;
+  
+  while (fscanf(cart, "ID: %i | Product Name: %s | Price: %f\n", &products_cart.id, products_cart.name, &products_cart.price) != EOF) 
+  {
+      total_cart += products_cart.price;
+  }
 
-int main() {
+  printf("\nTotal: %.2f", total_cart);
+
+  while(1)
+  {
+    
+    printf("\nInsert the amount you use to pay: $");
+    scanf("%f", &user_pay);
+  
+    if (user_pay > total_cart)
+    {
+      change = user_pay - total_cart;
+      printf("Thank you for your purchase. Your change is $%.2f", change);
+      break; 
+    } 
+    else if (user_pay < total_cart)
+    {
+      printf("You don't have enough money. Try again");
+    } else
+    {
+      printf("Thank you for your purchase.");
+      break;
+    }
+  }
+  fclose(cart);
+}
+
+
+
+
+int main() 
+{  
   int user_choice;
-
+  int password;
+  char user[3];
+  
   for (;;) {
-
+  
     choice();
     scanf("%i", &user_choice);
 
     switch (user_choice) {
     case 1:
-      registerItem();
-      break;
+      printf("User: ");
+      scanf("%s", user);
+      
+      if (strcmp(user, "admin") == 0) 
+      {
+        printf("Password: ");
+        scanf("%i", &password);
+        
+        if (password == 123)
+          registerItem();
+        else 
+          printf("Wrong password. Try again.");
+          continue;
+        
+      } else
+        printf("Wrong user. Try again.");
+        continue;
     case 2:
       printItems();
       break;
     case 3:
       printCart();
       break;
+    case 4:
+      pay();  
     case 0:
       return 0;
       break;

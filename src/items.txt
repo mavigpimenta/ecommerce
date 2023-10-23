@@ -1,4 +1,0 @@
-ID: 123 | Product Name: BITCH | Price: 70000000.00
-ID: 650 | Product Name: alal | Price: 900.00
-ID: 630 | Product Name: pqpq | Price: 700.00
-ID: 630 | Product Name: pqpq | Price: 700.00
