@@ -192,8 +192,6 @@ void pay()
 }
 
 
-
-
 int main() 
 {  
   int user_choice;
